@@ -1,6 +1,5 @@
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'token_storage.dart';
 
 class ApiClient {
@@ -8,7 +7,7 @@ class ApiClient {
   late final Dio _dio;
 
   ApiClient._() {
-    final baseUrl = dotenv.env['https://personalprofileapi-duanacebc6fsdgdv.northeurope-01.azurewebsites.net/'] ?? 'http://10.0.2.2:5000/api';
+    const baseUrl = 'https://personalprofileapi-duanacebc6fsdgdv.northeurope-01.azurewebsites.net/api';
 
     _dio = Dio(
       BaseOptions(
