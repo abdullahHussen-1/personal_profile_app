@@ -12,4 +12,14 @@ class AppStyle {
     fontSize: 25,
     fontWeight: FontWeight.bold,
   );
+  static TextStyle titleInfoLightStyle = TextStyle(
+    color: AppColors.darkBackground,
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  );
+  static TextStyle titleInfoDarkStyle = TextStyle(
+    color: AppColors.white,
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  );
 }
