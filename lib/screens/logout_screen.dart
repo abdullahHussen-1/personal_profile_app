@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:personal_profile_app/core/routes/app_routes.dart';
 import 'package:personal_profile_app/core/themes/app_media_query.dart';
 import 'package:personal_profile_app/core/widgets/custom_elevated_button.dart';
+import 'package:personal_profile_app/features/auth/services/auth_service.dart';
+import 'package:personal_profile_app/utils/dialog_utils.dart';
 
-class LogoutScreen extends StatelessWidget {
+class LogoutScreen extends StatefulWidget {
   LogoutScreen({super.key});
+
+  @override
+  State<LogoutScreen> createState() => _LogoutScreenState();
+}
+
+class _LogoutScreenState extends State<LogoutScreen> {
+  AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +76,7 @@ class LogoutScreen extends StatelessWidget {
               backGroundColor: Theme.of(context).colorScheme.error,
               onPressed: () {
                 //todo=>logout
+                logout();
               },
               widthContainer: AppMediaQuery.sizeWidth(context),
               heightContainer: AppMediaQuery.sizeHeight(context) * 0.08,
@@ -102,5 +113,18 @@ class LogoutScreen extends StatelessWidget {
         ).animate().fadeIn(duration: 900.ms).slideY(begin: -0.2, end: 0),
       ),
     );
+  }
+
+  Future<void> logout() async {
+    DialogUtils.showLoading(context: context, text: "Logging out...");
+    await authService.logout();
+    if (context.mounted) {
+      DialogUtils.hideLoading(context: context);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.loginScreen,
+        (route) => false,
+      );
+    }
   }
 }

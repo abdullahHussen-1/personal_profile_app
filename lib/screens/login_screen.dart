@@ -3,6 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:personal_profile_app/core/routes/app_routes.dart';
 import 'package:personal_profile_app/core/themes/app_media_query.dart';
 import 'package:personal_profile_app/core/widgets/custom_text_form_field.dart';
+import 'package:personal_profile_app/features/auth/services/auth_service.dart';
+import 'package:personal_profile_app/utils/dialog_utils.dart';
 
 import '../core/widgets/custom_elevated_button.dart';
 
@@ -15,13 +17,19 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController(
+    text: "abdullah@gmail.com",
+  );
+  TextEditingController passwordController = TextEditingController(
+    text: "123456789",
+  );
   final _formKey = GlobalKey<FormState>();
+  AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text("Login"), centerTitle: true),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -163,10 +171,40 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void login() {
-    /*if (_formKey.currentState!.validate()) {
-      print("Validated!");
-    }*/
-    Navigator.pushNamed(context, AppRoutes.homeBottomScreen);
+  Future<void> login() async {
+    if (_formKey.currentState!.validate()) {
+      DialogUtils.showLoading(context: context, text: "Logging in...");
+      try {
+        final response = await authService.login(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+
+        if (response.success) {
+          if (mounted) {
+            DialogUtils.hideLoading(context: context);
+            Navigator.pushReplacementNamed(context, AppRoutes.homeBottomScreen);
+          }
+        } else {
+          if (mounted) {
+            DialogUtils.hideLoading(context: context);
+            DialogUtils.showMessage(
+              context: context,
+              message: response.message ?? "Invalid email or password",
+              title: "Login Failed",
+            );
+          }
+        }
+      } catch (error) {
+        if (mounted) {
+          DialogUtils.hideLoading(context: context);
+          DialogUtils.showMessage(
+            context: context,
+            message: error.toString(),
+            title: "Error",
+          );
+        }
+      }
+    }
   }
 }

@@ -5,9 +5,27 @@ import 'package:personal_profile_app/core/themes/app_media_query.dart';
 import 'package:personal_profile_app/core/widgets/custom_circle_avatar.dart';
 import 'package:personal_profile_app/core/widgets/custom_elevated_button.dart';
 import 'package:personal_profile_app/core/widgets/custom_menu_Card.dart';
+import 'package:personal_profile_app/features/auth/models/auth_models.dart';
+import 'package:personal_profile_app/utils/dialog_utils.dart';
 
-class ProfileScreen extends StatelessWidget {
+import '../features/profile/services/profile_service.dart';
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final ProfileService profileService = ProfileService();
+  UserModel? user;
+  bool isLoading = true;
+
+  void initState() {
+    super.initState();
+    fetchProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +46,10 @@ class ProfileScreen extends StatelessWidget {
                 .slideY(begin: -0.2, end: 0),
             SizedBox(height: AppMediaQuery.sizeHeight(context) * 0.02),
             Text(
-              "Abdullah Hussein",
+              user!.fullName ?? "null",
               style: Theme.of(
                 context,
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ).animate().fadeIn(duration: 900.ms).slideY(begin: -0.2, end: 0),
-            const Text(
-              "Flutter Developer",
-              style: TextStyle(color: Colors.grey, fontSize: 16),
             ).animate().fadeIn(duration: 900.ms).slideY(begin: -0.2, end: 0),
             SizedBox(height: AppMediaQuery.sizeHeight(context) * 0.04),
 
@@ -43,22 +57,21 @@ class ProfileScreen extends StatelessWidget {
               title: "Email",
               iconData: Icons.email_outlined,
               onTap: () {},
-              value: "abdullah@gmail.com",
+              value: user!.email ?? "null",
             ).animate().fadeIn(duration: 900.ms).slideY(begin: -0.2, end: 0),
 
             CustomMenuCard(
               title: "Phone",
               iconData: Icons.phone_android_outlined,
               onTap: () {},
-              value: "01004781234",
+              value: user!.phone ?? "null",
             ).animate().fadeIn(duration: 900.ms).slideY(begin: -0.2, end: 0),
 
             CustomMenuCard(
               title: "Bio",
               iconData: Icons.info_outline,
               onTap: () {},
-              value:
-                  "Passionate Flutter Developer who loves building beautiful mobile apps.",
+              value: user!.bio ?? "null",
             ).animate().fadeIn(duration: 900.ms).slideY(begin: -0.2, end: 0),
 
             SizedBox(height: AppMediaQuery.sizeHeight(context) * 0.05),
@@ -77,5 +90,26 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> fetchProfile() async {
+    try {
+      final response = await profileService.getProfile();
+      if (response.success && response.data != null) {
+        setState(() {
+          user = response.data;
+          isLoading = false;
+        });
+      } else {
+        if (mounted) {
+          DialogUtils.showMessage(
+            context: context,
+            message: response.message ?? "Error loading profile",
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:personal_profile_app/core/routes/app_routes.dart';
 import 'package:personal_profile_app/core/themes/app_media_query.dart';
+import 'package:personal_profile_app/features/auth/services/auth_service.dart';
+import 'package:personal_profile_app/utils/dialog_utils.dart';
 
 import '../core/widgets/custom_elevated_button.dart';
 import '../core/widgets/custom_text_form_field.dart';
@@ -14,17 +16,23 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final phoneController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+  final nameController = TextEditingController(text: "abdullah");
+  final emailController = TextEditingController(text: "abdullah@gmail.com");
+  final phoneController = TextEditingController(text: "01004781246");
+  final passwordController = TextEditingController(text: "123456789");
+  final confirmPasswordController = TextEditingController(text: "123456789");
   final _formKey = GlobalKey<FormState>();
   bool isPasswordVisible = false;
+  AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Register"),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -175,8 +183,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void register() {
-    //if (_formKey.currentState!.validate()) {}
-    Navigator.pushNamed(context, AppRoutes.homeBottomScreen);
+  Future<void> register() async {
+    if (_formKey.currentState!.validate()) {
+      //todo=> showLoading
+      DialogUtils.showLoading(
+        context: context,
+        text: "Creating your account...",
+      );
+      try {
+        final response = await authService.register(
+          fullName: nameController.text,
+          email: emailController.text,
+          password: passwordController.text,
+          phone: phoneController.text,
+        );
+        //todo=> hed Loading
+        if (mounted) DialogUtils.hideLoading(context: context);
+        if (response.success) {
+          if (mounted) {
+            DialogUtils.showMessage(
+              context: context,
+              message: response.message,
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(
+                      context,
+                      AppRoutes.homeBottomScreen,
+                    );
+                  },
+                  child: const Text("Go to Home"),
+                ),
+              ],
+            );
+          }
+        } else {
+          //todo=>show message error come from server
+          if (mounted) {
+            DialogUtils.hideLoading(context: context);
+            DialogUtils.showMessage(
+              context: context,
+              message: response.message ?? "Registration Failed",
+              title: "Error",
+            );
+          }
+        }
+      } catch (error) {
+        if (mounted) {
+          DialogUtils.hideLoading(context: context);
+          DialogUtils.showMessage(
+            context: context,
+            message: "Connection Error: ${error.toString()}",
+            title: "Error",
+          );
+        }
+      }
+    }
   }
 }
