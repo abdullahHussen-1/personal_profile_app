@@ -8,15 +8,11 @@ class GalleryScreen extends StatelessWidget {
   const GalleryScreen({super.key});
 
   final List<String> images = const [
-    'assets/images/test_images.jpeg',
-    'assets/images/test_images.jpeg',
-    'assets/images/test_images.jpeg',
-    'assets/images/test_images.jpeg',
-    'assets/images/test_images.jpeg',
-    'assets/images/test_images.jpeg',
-    'assets/images/test_images.jpeg',
-    'assets/images/test_images.jpeg',
-    'assets/images/test_images.jpeg',
+    'assets/images/null_image.jpeg',
+    'assets/images/null_image.jpeg',
+    'assets/images/null_image.jpeg',
+    'assets/images/null_image.jpeg',
+    'assets/images/null_image.jpeg',
   ];
 
   @override

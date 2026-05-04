@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:personal_profile_app/core/network/token_storage.dart';
 import 'package:personal_profile_app/core/routes/app_routes.dart';
 import 'package:personal_profile_app/core/themes/app_media_query.dart';
 
@@ -14,9 +15,14 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () async {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
+        bool isToken = await TokenStorage.exists();
+        if (isToken) {
+          Navigator.pushReplacementNamed(context, AppRoutes.homeBottomScreen);
+        } else {
+          Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
+        }
       }
     });
   }

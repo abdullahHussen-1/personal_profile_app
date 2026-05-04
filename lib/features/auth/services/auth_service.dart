@@ -1,9 +1,7 @@
-
-import 'package:dio/dio.dart';
+import '../../../core/constants/api_constants.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_response.dart';
 import '../../../core/network/token_storage.dart';
-import '../../../core/constants/api_constants.dart';
 import '../models/auth_models.dart';
 
 class AuthService {
@@ -20,9 +18,9 @@ class AuthService {
         ApiConstants.register,
         data: {
           'fullName': fullName,
-          'email':    email,
+          'email': email,
           'password': password,
-          'phone':    phone,
+          'phone': phone,
         },
       );
       final response = ApiResponse<AuthResponse>.fromJson(
@@ -33,7 +31,7 @@ class AuthService {
         await TokenStorage.save(response.data!.token);
       }
       return response;
-    } on DioException catch (e) {
+    } catch (e) {
       return _handleError(e);
     }
   }
@@ -55,7 +53,7 @@ class AuthService {
         await TokenStorage.save(response.data!.token);
       }
       return response;
-    } on DioException catch (e) {
+    } catch (e) {
       return _handleError(e);
     }
   }
@@ -69,8 +67,9 @@ class AuthService {
     }
   }
 
-  ApiResponse<AuthResponse> _handleError(DioException e) {
-    final msg = e.response?.data?['message'] as String? ??
+  ApiResponse<AuthResponse> _handleError(e) {
+    final msg =
+        e.response?.data?['message'] as String? ??
         e.message ??
         'Something went wrong';
     return ApiResponse(success: false, message: msg);
