@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             onPressed: () {
               //todo=>Navigator to Notification
+              Navigator.pushNamed(context, AppRoutes.notificationsScreen);
             },
             icon: Icon(Icons.notifications_none_outlined),
           ),
@@ -34,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
           vertical: AppMediaQuery.sizeHeight(context) * 0.02,
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
               width: double.infinity,
@@ -77,6 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     HomeBottomNavigationBar.navKey.currentState?.updateIndex(3);
                   },
+                  isInfo: false,
                 ),
                 CustomMenuCard(
                   title: 'Gallery',
@@ -84,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     HomeBottomNavigationBar.navKey.currentState?.updateIndex(1);
                   },
+                  isInfo: false,
                 ),
                 CustomMenuCard(
                   title: 'Settings',
@@ -91,6 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     HomeBottomNavigationBar.navKey.currentState?.updateIndex(2);
                   },
+                  isInfo: false,
                 ),
                 CustomMenuCard(
                   title: 'Logout',
@@ -99,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.pushNamed(context, AppRoutes.logoutScreen);
                   },
                   isLogout: true,
+                  isInfo: false,
                 ),
               ],
             ),
