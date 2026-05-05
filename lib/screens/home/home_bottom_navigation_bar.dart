@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:personal_profile_app/screens/gallery_screen.dart';
-import 'package:personal_profile_app/screens/home_screen.dart';
-import 'package:personal_profile_app/screens/profile_screen.dart';
+import 'package:personal_profile_app/screens/gallery/gallery_screen.dart';
+import 'package:personal_profile_app/screens/home/home_screen.dart';
+import 'package:personal_profile_app/screens/profile/profile_screen.dart';
 import 'package:personal_profile_app/screens/settings_screen.dart';
 
 class HomeBottomNavigationBar extends StatefulWidget {

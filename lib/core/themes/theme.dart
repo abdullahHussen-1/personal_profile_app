@@ -2,17 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:personal_profile_app/core/styles/app_style.dart';
 import 'package:personal_profile_app/core/themes/app_colors.dart';
 
-/*class AppTheme {
-  static ThemeData lightTheme = ThemeData(
-    brightness: Brightness.light,
-    scaffoldBackgroundColor: AppColors.lightBackground,
-  );
-  static ThemeData darkTheme = ThemeData(
-    brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.darkBackground,
-  );
-}*/
-
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,

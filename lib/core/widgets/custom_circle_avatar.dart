@@ -18,7 +18,9 @@ class CustomCircleAvatar extends StatelessWidget {
   }
 
   ImageProvider image() {
-    if (imageUrl != null && imageUrl!.isNotEmpty) {
+    if (imageUrl != null &&
+        imageUrl!.isNotEmpty &&
+        imageUrl!.startsWith('http')) {
       return NetworkImage(imageUrl!);
     }
 

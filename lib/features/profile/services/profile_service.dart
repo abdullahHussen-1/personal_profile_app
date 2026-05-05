@@ -1,8 +1,8 @@
-
 import 'package:dio/dio.dart';
+
+import '../../../core/constants/api_constants.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_response.dart';
-import '../../../core/constants/api_constants.dart';
 import '../../auth/models/auth_models.dart';
 import '../models/profile_models.dart';
 
@@ -22,11 +22,17 @@ class ProfileService {
     required String fullName,
     required String phone,
     required String bio,
+    required String email,
   }) async {
     try {
       final res = await _dio.put(
         ApiConstants.profile,
-        data: {'fullName': fullName, 'phone': phone, 'bio': bio},
+        data: {
+          'fullName': fullName,
+          'phone': phone,
+          'bio': bio,
+          'email': email,
+        },
       );
       return ApiResponse.fromJson(res.data, (d) => UserModel.fromJson(d));
     } on DioException catch (e) {
@@ -34,9 +40,21 @@ class ProfileService {
     }
   }
 
-  Future<ApiResponse<String>> uploadAvatar(String avatarUrl) async {
+  Future<ApiResponse<String>> uploadAvatar(String imagePath) async {
     try {
-      final res = await _dio.post(ApiConstants.avatar, data: avatarUrl);
+      FormData formData = FormData.fromMap({
+        "Avatar": await MultipartFile.fromFile(
+          imagePath,
+          filename: imagePath.split('/').last,
+        ),
+      });
+
+      final res = await _dio.post(
+        ApiConstants.avatar,
+        data: formData,
+        options: Options(headers: {"Content-Type": "multipart/form-data"}),
+      );
+
       return ApiResponse.fromJson(res.data, (d) => d as String);
     } on DioException catch (e) {
       return _handleError(e);
@@ -59,10 +77,7 @@ class ProfileService {
     try {
       final res = await _dio.put(
         ApiConstants.changePassword,
-        data: {
-          'currentPassword': currentPassword,
-          'newPassword':     newPassword,
-        },
+        data: {'currentPassword': currentPassword, 'newPassword': newPassword},
       );
       return ApiResponse.fromJson(res.data, (d) => d as String);
     } on DioException catch (e) {
@@ -74,14 +89,17 @@ class ProfileService {
     try {
       final res = await _dio.get(ApiConstants.profileStats);
       return ApiResponse.fromJson(
-          res.data, (d) => ProfileStatsModel.fromJson(d));
+        res.data,
+        (d) => ProfileStatsModel.fromJson(d),
+      );
     } on DioException catch (e) {
       return _handleError(e);
     }
   }
 
   ApiResponse<T> _handleError<T>(DioException e) {
-    final msg = e.response?.data?['message'] as String? ??
+    final msg =
+        e.response?.data?['message'] as String? ??
         e.message ??
         'Something went wrong';
     return ApiResponse(success: false, message: msg);
