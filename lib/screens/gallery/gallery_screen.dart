@@ -2,17 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:personal_profile_app/core/routes/app_routes.dart';
 
-import '../core/themes/app_media_query.dart';
+import '../../core/themes/app_media_query.dart';
 
 class GalleryScreen extends StatelessWidget {
-  const GalleryScreen({super.key});
+  GalleryScreen({super.key});
 
-  final List<String> images = const [
-    'assets/images/null_image.jpeg',
-    'assets/images/null_image.jpeg',
-    'assets/images/null_image.jpeg',
-    'assets/images/null_image.jpeg',
-    'assets/images/null_image.jpeg',
+  final List<String> images = [
+    'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
   ];
 
   @override
@@ -54,7 +50,7 @@ class GalleryScreen extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
 
-                child: Image.asset(images[index], fit: BoxFit.cover),
+                child: Image.network(images[index], fit: BoxFit.cover),
               ),
             ),
           );
