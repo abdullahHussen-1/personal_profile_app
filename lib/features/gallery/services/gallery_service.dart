@@ -1,21 +1,31 @@
-
 import 'package:dio/dio.dart';
+
+import '../../../core/constants/api_constants.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_response.dart';
-import '../../../core/constants/api_constants.dart';
 import '../models/gallery_models.dart';
 
 class GalleryService {
   final _dio = ApiClient.instance.dio;
 
-  Future<ApiResponse<List<GalleryImageModel>>> getAll() async {
+  Future<ApiResponse<List<GalleryImageModel>>> getAll({
+    int page = 1,
+    int pageSize = 10,
+  }) async {
     try {
-      final res = await _dio.get(ApiConstants.gallery);
-      return ApiResponse.fromJson(
-        res.data,
-        (d) => (d as List)
-            .map((e) => GalleryImageModel.fromJson(e))
-            .toList(),
+      final res = await _dio.get(
+        ApiConstants.gallery,
+        queryParameters: {'pageNumber': page, 'pageSize': pageSize},
+      );
+
+      final responseData = res.data['data'];
+
+      final List list = responseData['data'];
+
+      return ApiResponse(
+        success: true,
+        message: res.data['message'],
+        data: list.map((e) => GalleryImageModel.fromJson(e)).toList(),
       );
     } on DioException catch (e) {
       return _handleError(e);
@@ -26,30 +36,41 @@ class GalleryService {
     try {
       final res = await _dio.get(ApiConstants.galleryById(id));
       return ApiResponse.fromJson(
-          res.data, (d) => GalleryImageModel.fromJson(d));
+        res.data,
+        (d) => GalleryImageModel.fromJson(d),
+      );
     } on DioException catch (e) {
       return _handleError(e);
     }
   }
 
-  Future<ApiResponse<GalleryImageModel>> addImage({
-    required String imageUrl,
-    required String title,
-    required String description,
-  }) async {
+  Future<ApiResponse<String>> uploadImages(List<String> imagePaths) async {
     try {
+      final formData = FormData();
+
+      for (var path in imagePaths) {
+        formData.files.add(
+          MapEntry(
+            'images',
+            await MultipartFile.fromFile(path, filename: path.split('/').last),
+          ),
+        );
+      }
+
       final res = await _dio.post(
-        ApiConstants.gallery,
-        data: {
-          'imageUrl':    imageUrl,
-          'title':       title,
-          'description': description,
+        ApiConstants.galleryUpload,
+        data: formData,
+        onSendProgress: (sent, total) {
+          final percent = (sent / total * 100).toStringAsFixed(0);
         },
       );
-      return ApiResponse.fromJson(
-          res.data, (d) => GalleryImageModel.fromJson(d));
+
+      return ApiResponse.fromJson(res.data, (d) => d?.toString() ?? "");
     } on DioException catch (e) {
-      return _handleError(e);
+      return ApiResponse(
+        success: false,
+        message: e.response?.data?['message'] ?? e.message ?? 'Upload failed',
+      );
     }
   }
 
@@ -67,9 +88,7 @@ class GalleryService {
       final res = await _dio.get(ApiConstants.galleryFavorites);
       return ApiResponse.fromJson(
         res.data,
-        (d) => (d as List)
-            .map((e) => GalleryImageModel.fromJson(e))
-            .toList(),
+        (d) => (d as List).map((e) => GalleryImageModel.fromJson(e)).toList(),
       );
     } on DioException catch (e) {
       return _handleError(e);
@@ -95,7 +114,8 @@ class GalleryService {
   }
 
   ApiResponse<T> _handleError<T>(DioException e) {
-    final msg = e.response?.data?['message'] as String? ??
+    final msg =
+        e.response?.data?['message'] as String? ??
         e.message ??
         'Something went wrong';
     return ApiResponse(success: false, message: msg);

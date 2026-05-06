@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -38,9 +37,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       setState(() {
         imageFile = File(pickedFile.path);
       });
-      List<int> imageBytes = await pickedFile.readAsBytes();
-      String base64Image = base64Encode(imageBytes);
-      uploadAvatar(base64Image);
+      uploadAvatar(pickedFile.path);
     }
   }
 
@@ -83,7 +80,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, true),
         ),
         title: const Text("Edit Profile"),
         centerTitle: true,
@@ -100,7 +97,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Center(
               child: Stack(
                 children: [
-                  CustomCircleAvatar(imageFile: imageFile),
+                  CustomCircleAvatar(
+                    imageFile: imageFile,
+                    imageUrl: user.avatarUrl,
+                  ),
                   Positioned(
                     bottom: 0,
                     right: 0,

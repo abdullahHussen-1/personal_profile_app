@@ -13,21 +13,14 @@ class CustomCircleAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: 53,
       backgroundColor: Theme.of(context).primaryColor,
-      child: CircleAvatar(radius: 50, backgroundImage: image()),
+      child: CircleAvatar(
+        radius: 50,
+        backgroundImage: imageFile != null
+            ? FileImage(imageFile!)
+            : imageUrl != null
+            ? NetworkImage(imageUrl!)
+            : AssetImage('assets/images/null_image.jpeg'),
+      ),
     );
-  }
-
-  ImageProvider image() {
-    if (imageUrl != null &&
-        imageUrl!.isNotEmpty &&
-        imageUrl!.startsWith('http')) {
-      return NetworkImage(imageUrl!);
-    }
-
-    if (imageFile != null) {
-      return FileImage(imageFile!);
-    }
-
-    return const AssetImage('assets/images/null_image.jpeg');
   }
 }

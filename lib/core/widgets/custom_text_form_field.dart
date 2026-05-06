@@ -6,8 +6,8 @@ class CustomTextFormField extends StatelessWidget {
   final int maxLines;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
-  final bool obscureText; // إضافة خاصية إخفاء النص
-  final Widget? suffixIcon; // إضافة أيقونة جانبية
+  final bool obscureText;
+  final Widget? suffixIcon;
 
   const CustomTextFormField({
     super.key,
@@ -30,7 +30,6 @@ class CustomTextFormField extends StatelessWidget {
         children: [
           Text(
             label,
-            // استخدام لون النص من الثيم بدل اللون الثابت
             style: theme.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -45,13 +44,13 @@ class CustomTextFormField extends StatelessWidget {
             decoration: InputDecoration(
               filled: true,
               fillColor: theme.cardColor,
-              // هيقرأ lightSurface أو darkSurface
               hintText: "Enter your $label",
               suffixIcon: suffixIcon,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 16,
               ),
+              errorMaxLines: 4,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
                 borderSide: BorderSide.none,

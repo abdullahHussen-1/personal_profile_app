@@ -42,22 +42,24 @@ class ProfileService {
 
   Future<ApiResponse<String>> uploadAvatar(String imagePath) async {
     try {
-      FormData formData = FormData.fromMap({
-        "Avatar": await MultipartFile.fromFile(
+      final formData = FormData.fromMap({
+        'avatar': await MultipartFile.fromFile(
           imagePath,
           filename: imagePath.split('/').last,
         ),
       });
 
-      final res = await _dio.post(
-        ApiConstants.avatar,
-        data: formData,
-        options: Options(headers: {"Content-Type": "multipart/form-data"}),
-      );
+      final res = await _dio.post(ApiConstants.avatar, data: formData);
 
       return ApiResponse.fromJson(res.data, (d) => d as String);
     } on DioException catch (e) {
-      return _handleError(e);
+      print("ERROR STATUS: ${e.response?.statusCode}");
+      print("ERROR DATA: ${e.response?.data}");
+
+      return ApiResponse(
+        success: false,
+        message: e.response?.data?['message'] ?? e.message ?? 'Upload failed',
+      );
     }
   }
 
