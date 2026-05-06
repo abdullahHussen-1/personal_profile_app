@@ -16,13 +16,14 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final nameController = TextEditingController(text: "abdullah");
-  final emailController = TextEditingController(text: "abdullah@gmail.com");
-  final phoneController = TextEditingController(text: "01004781246");
-  final passwordController = TextEditingController(text: "123456789");
-  final confirmPasswordController = TextEditingController(text: "123456789");
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool isPasswordVisible = false;
+  bool confirmPasswordVisible = false;
   AuthService authService = AuthService();
 
   @override
@@ -89,8 +90,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   label: "Email Address",
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || !value.contains('@'))
-                      return "Enter a valid email";
+                    if (value == null || value.trim().isEmpty) {
+                      return "Please enter your email.";
+                    }
+                    if (!value.contains('@') || !value.endsWith("gmail.com")) {
+                      return "Enter a valid email.";
+                    }
+
                     return null;
                   },
                 ).animate().fadeIn(delay: 400.ms),
@@ -99,8 +105,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: phoneController,
                   label: "Phone Number",
                   keyboardType: TextInputType.phone,
-                  validator: (value) =>
-                      value!.length < 10 ? "Enter a valid phone number" : null,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Please enter your Phone.";
+                    }
+                    if (value.length < 11) {
+                      return "Enter valid phone number.";
+                    }
+                    return null;
+                  },
                 ).animate().fadeIn(delay: 500.ms),
 
                 CustomTextFormField(
@@ -116,28 +129,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: () =>
                         setState(() => isPasswordVisible = !isPasswordVisible),
                   ),
-                  validator: (value) =>
-                      value!.length < 6 ? "Password is too short" : null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your password.";
+                    }
+                    if (value.length < 8) {
+                      return "Password must be at least 8 characters.";
+                    }
+                    final passwordRegex = RegExp(
+                      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).+$',
+                    );
+                    if (!passwordRegex.hasMatch(value)) {
+                      return "Password must contain uppercase lowercase and special characte.r";
+                    }
+
+                    return null;
+                  },
                 ).animate().fadeIn(delay: 600.ms),
                 CustomTextFormField(
                   controller: confirmPasswordController,
                   label: "Confirm Password",
-                  obscureText: !isPasswordVisible,
+                  obscureText: !confirmPasswordVisible,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      isPasswordVisible
+                      confirmPasswordVisible
                           ? Icons.visibility
                           : Icons.visibility_off,
                     ),
-                    onPressed: () =>
-                        setState(() => isPasswordVisible = !isPasswordVisible),
+                    onPressed: () => setState(
+                      () => confirmPasswordVisible = !confirmPasswordVisible,
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Please confirm your password";
+                      return "Please confirm your password.";
                     }
                     if (value != passwordController.text) {
-                      return "Passwords do not match";
+                      return "Passwords do not match.";
+                    }
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your password.";
+                    }
+                    if (value.length < 8) {
+                      return "Password must be at least 8 characters.";
+                    }
+                    final passwordRegex = RegExp(
+                      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).+$',
+                    );
+                    if (!passwordRegex.hasMatch(value)) {
+                      return "Password must contain uppercase lowercase and special character.";
                     }
                     return null;
                   },

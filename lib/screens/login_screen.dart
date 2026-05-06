@@ -17,12 +17,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
-  TextEditingController emailController = TextEditingController(
-    text: "abdullah@gmail.com",
-  );
-  TextEditingController passwordController = TextEditingController(
-    text: "123456789",
-  );
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   AuthService authService = AuthService();
 
@@ -79,6 +75,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (value == null || value.isEmpty) {
                           return "Please enter your email";
                         }
+                        if (!value.contains('@') ||
+                            !value.endsWith("gmail.com")) {
+                          return "Enter a valid email.";
+                        }
                         return null;
                       },
                     ).animate().fadeIn(delay: 400.ms),
@@ -99,8 +99,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return "Please enter your password";
+                          return "Please enter your password.";
                         }
+                        if (value.length < 8) {
+                          return "Password must be at least 8 characters.";
+                        }
+                        final passwordRegex = RegExp(
+                          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).+$',
+                        );
+                        if (!passwordRegex.hasMatch(value)) {
+                          return "Password must contain uppercase lowercase and special character.";
+                        }
+
                         return null;
                       },
                     ).animate().fadeIn(delay: 400.ms),

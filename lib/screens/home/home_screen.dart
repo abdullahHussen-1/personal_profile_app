@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Column(
                           children: [
-                            CustomCircleAvatar(),
+                            CustomCircleAvatar(imageUrl: user!.avatarUrl),
                             SizedBox(
                               height: AppMediaQuery.sizeHeight(context) * 0.015,
                             ),
@@ -149,6 +149,16 @@ class _HomeScreenState extends State<HomeScreen> {
           DialogUtils.showMessage(
             context: context,
             message: response.message ?? "Error loading profile",
+            actions: [
+              IconButton(
+                onPressed: () {
+                  fetchProfile();
+                  Navigator.pop(context);
+                },
+                icon: Text("OK"),
+              ),
+            ],
+            title: "Error",
           );
         }
       }

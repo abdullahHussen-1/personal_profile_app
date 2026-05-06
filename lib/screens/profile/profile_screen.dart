@@ -43,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CustomCircleAvatar()
+                  CustomCircleAvatar(imageUrl: user!.avatarUrl)
                       .animate()
                       .fadeIn(duration: 900.ms)
                       .slideY(begin: -0.2, end: 0),
@@ -130,6 +130,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           DialogUtils.showMessage(
             context: context,
             message: response.message ?? "Error loading profile",
+            actions: [
+              IconButton(
+                onPressed: () {
+                  fetchProfile();
+                  Navigator.pop(context);
+                },
+                icon: Text("OK"),
+              ),
+            ],
+            title: "Error",
           );
         }
       }

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
+import 'package:personal_profile_app/utils/dialog_utils.dart';
 
 import '../../core/themes/app_media_query.dart';
+import '../../features/gallery/models/gallery_models.dart';
+import '../../features/gallery/services/gallery_service.dart';
 
 class GalleryDetailsScreen extends StatefulWidget {
   GalleryDetailsScreen({super.key});
@@ -11,11 +15,23 @@ class GalleryDetailsScreen extends StatefulWidget {
 }
 
 class _GalleryDetailsScreenState extends State<GalleryDetailsScreen> {
+  final GalleryService _galleryService = GalleryService();
   bool isFavorite = false;
+  bool isActionLoading = false; // لمنع الضغط المتكرر أثناء التحميل
+
+  @override
+  void initState() {
+    super.initState();
+    // تأجيل الحصول على البيانات حتى تكتمل عملية بناء الـ Context
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeFavoriteStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    var imageUrl = ModalRoute.of(context)?.settings.arguments as String?;
+    var imageModel =
+        ModalRoute.of(context)?.settings.arguments as GalleryImageModel;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -33,8 +49,8 @@ class _GalleryDetailsScreenState extends State<GalleryDetailsScreen> {
               padding: EdgeInsets.all(AppMediaQuery.sizeWidth(context) * 0.04),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(25),
-                child: Image.asset(
-                  imageUrl ?? "",
+                child: Image.network(
+                  imageModel.imageUrl ?? "",
                   width: double.infinity,
                   height: AppMediaQuery.sizeHeight(context) * 0.45,
                   fit: BoxFit.cover,
@@ -49,16 +65,14 @@ class _GalleryDetailsScreenState extends State<GalleryDetailsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Beautiful Nature",
+                    "Special Moment",
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   IconButton(
                     onPressed: () {
-                      setState(() {
-                        isFavorite = !isFavorite;
-                      });
+                      _toggleFavorite(imageModel.id);
                     },
                     icon: Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -77,7 +91,7 @@ class _GalleryDetailsScreenState extends State<GalleryDetailsScreen> {
                 vertical: 10,
               ),
               child: Text(
-                "This is a beautiful place I visited last summer. The view was amazing and very peaceful.",
+                "Capturing this beautiful moment to stay forever. Every detail here brings back a sense of peace and great memories.",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey,
                   height: 1.5,
@@ -97,7 +111,7 @@ class _GalleryDetailsScreenState extends State<GalleryDetailsScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    "12 May 2024",
+                    "${formatDate(imageModel.createdAt)}",
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey,
                       fontWeight: FontWeight.w500,
@@ -110,5 +124,69 @@ class _GalleryDetailsScreenState extends State<GalleryDetailsScreen> {
         ),
       ),
     );
+  }
+
+  String formatDate(dynamic date) {
+    if (date == null) return "N/A";
+    try {
+      DateTime? dateTime;
+      if (date is DateTime) {
+        dateTime = date;
+      } else if (date is String && date.isNotEmpty) {
+        dateTime = DateTime.parse(date);
+      }
+      if (dateTime != null) {
+        return DateFormat('d MMM yyyy').format(dateTime);
+      }
+      return "N/A";
+    } catch (e) {
+      return "Invalid Date";
+    }
+  }
+
+  Future<void> _toggleFavorite(int id) async {
+    if (isActionLoading) return;
+    setState(() {
+      isFavorite = !isFavorite;
+      isActionLoading = true;
+    });
+
+    try {
+      final response = !isFavorite
+          ? await _galleryService.removeFavorite(id)
+          : await _galleryService.addFavorite(id);
+
+      if (!response.success) {
+        setState(() {
+          isFavorite = !isFavorite;
+        });
+        if (mounted) {
+          DialogUtils.showMessage(
+            context: context,
+            message: response.message ?? "Error",
+          );
+        }
+      }
+    } catch (e) {
+      setState(() {
+        isFavorite = !isFavorite;
+      });
+      if (mounted) {
+        DialogUtils.showMessage(
+          context: context,
+          message: "Something went wrong",
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isActionLoading = false);
+    }
+  }
+
+  void _initializeFavoriteStatus() {
+    final imageModel =
+        ModalRoute.of(context)?.settings.arguments as GalleryImageModel;
+    setState(() {
+      isFavorite = imageModel.isFavorite ?? false;
+    });
   }
 }
