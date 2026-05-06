@@ -1,17 +1,25 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:personal_profile_app/core/themes/app_colors.dart';
 
 class CustomCircleAvatar extends StatelessWidget {
-  const CustomCircleAvatar({super.key});
+  CustomCircleAvatar({super.key, this.imageFile, this.imageUrl});
+
+  File? imageFile;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
       radius: 53,
-      backgroundColor: AppColors.white,
-      child: const CircleAvatar(
+      backgroundColor: Theme.of(context).primaryColor,
+      child: CircleAvatar(
         radius: 50,
-        backgroundImage: AssetImage("assets/images/test_images.jpeg"),
+        backgroundImage: imageFile != null
+            ? FileImage(imageFile!)
+            : imageUrl != null
+            ? NetworkImage(imageUrl!)
+            : AssetImage('assets/images/null_image.jpeg'),
       ),
     );
   }

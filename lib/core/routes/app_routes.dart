@@ -6,4 +6,10 @@ class AppRoutes {
   static String profileScreen = "profile";
   static String homeBottomScreen = "home_bottom";
   static String logoutScreen = "logout";
+  static String editScreen = "edit";
+  static String galleryDetailsScreen = "details";
+  static String notificationsScreen = "notifications";
+  static String aboutScreen = "about";
+  static String loginScreen = "login";
+  static String registerScreen = "register";
 }
