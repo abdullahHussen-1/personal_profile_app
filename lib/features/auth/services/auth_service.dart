@@ -1,7 +1,7 @@
 import '../../../core/constants/api_constants.dart';
 import '../../../core/network/api_client.dart';
-import '../../../core/network/api_response.dart';
 import '../../../core/network/token_storage.dart';
+import '../../../data/api_response.dart';
 import '../models/auth_models.dart';
 
 class AuthService {

@@ -35,8 +35,6 @@ class _LogoutScreenState extends State<LogoutScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              /* height: 180,
-              width: 180,*/
               padding: EdgeInsets.symmetric(
                 horizontal: AppMediaQuery.sizeWidth(context) * 0.2,
                 vertical: AppMediaQuery.sizeHeight(context) * 0.1,
@@ -49,9 +47,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                 child: Icon(
                   Icons.logout_rounded,
                   size: 80,
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.error, // سيستخدم AppColors.errorRed
+                  color: Theme.of(context).colorScheme.error,
                 ),
               ),
             ),
@@ -116,15 +112,26 @@ class _LogoutScreenState extends State<LogoutScreen> {
   }
 
   Future<void> logout() async {
-    DialogUtils.showLoading(context: context, text: "Logging out...");
-    await authService.logout();
-    if (context.mounted) {
-      DialogUtils.hideLoading(context: context);
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.loginScreen,
-        (route) => false,
-      );
+    try {
+      DialogUtils.showLoading(context: context, text: "Logging out...");
+      await authService.logout();
+      if (context.mounted) {
+        DialogUtils.hideLoading(context: context);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.loginScreen,
+          (route) => false,
+        );
+      }
+    } catch (error) {
+      if (context.mounted) {
+        DialogUtils.hideLoading(context: context);
+        DialogUtils.showMessage(
+          context: context,
+          message: "Logout failed",
+          title: "Error",
+        );
+      }
     }
   }
 }

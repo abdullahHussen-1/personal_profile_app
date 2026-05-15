@@ -96,7 +96,7 @@ class AboutScreen extends StatelessWidget {
             SizedBox(height: AppMediaQuery.sizeHeight(context) * 0.08),
 
             Text(
-              "© 2024 All Rights Reserved",
+              "© 2026 All Rights Reserved",
               style: TextStyle(fontSize: 12, color: Colors.grey[500]),
             ),
             const SizedBox(height: 20),

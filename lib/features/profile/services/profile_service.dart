@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../core/constants/api_constants.dart';
 import '../../../core/network/api_client.dart';
-import '../../../core/network/api_response.dart';
+import '../../../data/api_response.dart';
 import '../../auth/models/auth_models.dart';
 import '../models/profile_models.dart';
 
@@ -60,30 +60,6 @@ class ProfileService {
         success: false,
         message: e.response?.data?['message'] ?? e.message ?? 'Upload failed',
       );
-    }
-  }
-
-  Future<ApiResponse<String>> deleteAvatar() async {
-    try {
-      final res = await _dio.delete(ApiConstants.avatar);
-      return ApiResponse.fromJson(res.data, (d) => d as String);
-    } on DioException catch (e) {
-      return _handleError(e);
-    }
-  }
-
-  Future<ApiResponse<String>> changePassword({
-    required String currentPassword,
-    required String newPassword,
-  }) async {
-    try {
-      final res = await _dio.put(
-        ApiConstants.changePassword,
-        data: {'currentPassword': currentPassword, 'newPassword': newPassword},
-      );
-      return ApiResponse.fromJson(res.data, (d) => d as String);
-    } on DioException catch (e) {
-      return _handleError(e);
     }
   }
 

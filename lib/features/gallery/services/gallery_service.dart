@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../core/constants/api_constants.dart';
 import '../../../core/network/api_client.dart';
-import '../../../core/network/api_response.dart';
+import '../../../data/api_response.dart';
 import '../models/gallery_models.dart';
 
 class GalleryService {
@@ -26,18 +26,6 @@ class GalleryService {
         success: true,
         message: res.data['message'],
         data: list.map((e) => GalleryImageModel.fromJson(e)).toList(),
-      );
-    } on DioException catch (e) {
-      return _handleError(e);
-    }
-  }
-
-  Future<ApiResponse<GalleryImageModel>> getById(int id) async {
-    try {
-      final res = await _dio.get(ApiConstants.galleryById(id));
-      return ApiResponse.fromJson(
-        res.data,
-        (d) => GalleryImageModel.fromJson(d),
       );
     } on DioException catch (e) {
       return _handleError(e);
@@ -71,15 +59,6 @@ class GalleryService {
         success: false,
         message: e.response?.data?['message'] ?? e.message ?? 'Upload failed',
       );
-    }
-  }
-
-  Future<ApiResponse<String>> deleteImage(int id) async {
-    try {
-      final res = await _dio.delete(ApiConstants.galleryById(id));
-      return ApiResponse.fromJson(res.data, (d) => d as String);
-    } on DioException catch (e) {
-      return _handleError(e);
     }
   }
 
